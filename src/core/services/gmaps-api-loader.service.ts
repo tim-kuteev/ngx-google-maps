@@ -19,11 +19,11 @@ export class GMapsApiLoaderService {
 
   private init() {
     this._load = new Promise<void>((resolve: Function, reject: Function) => {
+      const params = Object.keys(this.config).map(key => `${key}=${this.config[key]}`).join('&');
       const element = Object.assign(this.document.createElement('script'), {
         id: 'google-maps-api-script',
         type: 'text/javascript',
-        // TODO: add config properties parser
-        src: `https://maps.googleapis.com/maps/api/js?key=${this.config.apiKey}&libraries=visualization`,
+        src: `https://maps.googleapis.com/maps/api/js?${params}`,
         onload: () => resolve(),
         onerror: err => reject(err),
       });
