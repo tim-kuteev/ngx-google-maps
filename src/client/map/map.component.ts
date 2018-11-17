@@ -1,32 +1,39 @@
-import { Component, ContentChildren, QueryList, ViewChild } from '@angular/core';
-import {} from '@types/googlemaps';
-import { MapHelperService } from './map-helper.service';
+import { AfterContentInit, Component, ContentChildren, QueryList, ViewChild } from '@angular/core';
+import { merge, of } from 'rxjs';
 import { GMapsApiLoaderService } from '../../core/services/gmaps-api-loader.service';
-import { ApiReady } from '../abstract/api-ready';
 import { MarkerComponent } from '../marker/marker.component';
 import { HeatmapComponent } from '../heatmap/heatmap.component';
+import { ComponentBase } from '../abstract/component-base';
 
 @Component({
   selector: 'gmaps-map',
   template: '<div #mapView class="map"></div><ng-content select="gmaps-marker,gmaps-heatmap"></ng-content>',
   styles: ['.map{height: 100%}'],
-  viewProviders: [MapHelperService],
 })
-export class MapComponent extends ApiReady<google.maps.Map, google.maps.MapOptions> {
+export class MapComponent extends ComponentBase<google.maps.Map, google.maps.MapOptions> implements AfterContentInit {
 
   @ViewChild('mapView') mapView;
   @ContentChildren(MarkerComponent) private markerComponents: QueryList<MarkerComponent>;
   @ContentChildren(HeatmapComponent) private heatmapComponents: QueryList<HeatmapComponent>;
 
   constructor(
-      private helper: MapHelperService,
-      loader: GMapsApiLoaderService) {
-    super(loader);
+      private apiLoader: GMapsApiLoaderService) {
+    super();
   }
 
-  protected ready(): void {
-    this.helper.initMap(this);
-    this.helper.initMarkers(this.markerComponents);
-    this.helper.initHeatmaps(this.heatmapComponents);
+  ngAfterContentInit(): void {
+    this.apiLoader.ready(() => {
+      this.options = Object.assign({center: {lat: 0, lng: 0}, zoom: 3}, this.options);
+      this.model = new google.maps.Map(this.mapView.nativeElement, this.options);
+
+      merge(of(this.markerComponents), this.markerComponents.changes).subscribe(components => {
+        components.forEach(component => component.setMap(this.model));
+      });
+      if (google.maps.visualization) {
+        merge(of(this.heatmapComponents), this.heatmapComponents.changes).subscribe(components => {
+          components.forEach(component => component.setMap(this.model));
+        });
+      }
+    });
   }
 }

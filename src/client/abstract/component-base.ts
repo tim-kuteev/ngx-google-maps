@@ -3,14 +3,16 @@ import { EventEmitter, Input, Output } from '@angular/core';
 export abstract class ComponentBase<T, O> {
 
   @Input() options: O;
-  @Output() model = new EventEmitter<T>();
-  private _id = Math.random().toString(36).substring(2);
+  @Output() init = new EventEmitter<T>();
+  protected initialized = new Promise<T>((resolve: Function) => this.init.subscribe(resolve));
+  protected _model: T;
 
-  get id(): string {
-    return this._id;
+  get model(): T {
+    return this._model;
   }
 
-  onModelInit(model: T) {
-    this.model.emit(model);
+  set model(value: T) {
+    this._model = value;
+    this.init.emit(value);
   }
 }
