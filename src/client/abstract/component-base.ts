@@ -4,8 +4,7 @@ export abstract class ComponentBase<T, O> {
 
   @Input() options: O;
   @Output() init = new EventEmitter<T>();
-  protected initialized = new Promise<T>((resolve: Function) => this.init.subscribe(resolve));
-  protected _model: T;
+  private _model: T;
 
   get model(): T {
     return this._model;

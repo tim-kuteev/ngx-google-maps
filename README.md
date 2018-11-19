@@ -4,5 +4,5 @@
 
 ## Install
 ```bash
-npm i @types/googlemaps ngx-gmaps --save
+npm i ngx-gmaps --save
 ```

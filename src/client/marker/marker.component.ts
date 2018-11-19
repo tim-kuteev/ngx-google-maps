@@ -1,6 +1,6 @@
 import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ComponentBase } from '../abstract/component-base';
-import { GMapsApiLoaderService } from '../../core/services/gmaps-api-loader.service';
+import { MapSubject } from '../map/map.subject';
 
 @Component({
   selector: 'gmaps-marker',
@@ -10,38 +10,28 @@ export class MarkerComponent
     extends ComponentBase<google.maps.Marker, google.maps.MarkerOptions>
     implements OnInit, OnDestroy, OnChanges {
 
-  map: google.maps.Map | null;
-
   constructor(
-      private apiLoader: GMapsApiLoaderService) {
+      private map: MapSubject) {
     super();
   }
 
   ngOnInit(): void {
-    this.apiLoader.ready(() => {
-      this.model = new google.maps.Marker(this.options);
+    this.map.observe().subscribe(map => {
+      this.options.map = map;
+      this.ngOnChanges();
     });
   }
 
   ngOnDestroy(): void {
-    this.setMap(null);
+    this.options.map = undefined;
+    this.ngOnChanges();
   }
 
   ngOnChanges(): void {
-    this.proceedChanges();
-  }
-
-  setMap(map: google.maps.Map | null): void {
-    this.map = map;
-    this.proceedChanges();
-  }
-
-  private proceedChanges(): void {
-    this.initialized.then(model => {
-      if (model.getMap() !== this.map) {
-        model.setMap(this.map);
-      }
-      model.setOptions(this.options);
-    });
+    if (this.model) {
+      this.model.setOptions(this.options);
+    } else if (this.options.map) {
+      this.model = new google.maps.Marker(this.options);
+    }
   }
 }

@@ -17,7 +17,7 @@
     "rootDir": "./src",
     "sourceMap": true,
     "target": "es5",
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "stripInternal": true,
     "skipLibCheck": true
   },

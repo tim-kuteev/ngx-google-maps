@@ -1,5 +1,8 @@
 {
   "description": "Google Maps for Angular2+",
+  "dependencies": {
+    "@types/googlemaps": "~3.30.16"
+  },
   "devDependencies": {
     "@angular/animations": "^6.0.0",
     "@angular/common": "^6.0.0",
@@ -9,11 +12,10 @@
     "@angular/platform-browser": "^6.0.0",
     "@angular/platform-browser-dynamic": "^6.0.0",
     "@angular/platform-server": "^6.0.0",
-    "@types/googlemaps": "~3.30.16",
     "rimraf": "^2.6.2",
-    "rxjs": "~6.3.3",
-    "typescript": "^2.0.0",
-    "zone.js": "^0.8.14"
+    "rxjs": "^6.3.3",
+    "typescript": "^2.7.2",
+    "zone.js": "~0.8.26"
   },
   "license": "MIT",
   "main": "dist/index.js",
@@ -27,5 +29,5 @@
     "build": "ngc -p ./tsconfig.json && tsc -p ./tsconfig.json"
   },
   "typings": "dist/index.d.ts",
-  "version": "0.1.1"
+  "version": "0.1.2"
 }

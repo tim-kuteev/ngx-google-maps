@@ -4,5 +4,5 @@ See instruction on [GitHub Repository](https://github.com/tim-kuteev/ngx-google-
 
 ## Install
 ```bash
-npm i @types/googlemaps ngx-gmaps --save
+npm i ngx-gmaps --save
 ```
