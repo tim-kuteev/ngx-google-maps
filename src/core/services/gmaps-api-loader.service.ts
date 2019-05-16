@@ -1,39 +1,47 @@
 import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { GMapsCoreConfig } from '../gmaps-core.config';
+import { Observable, Subscriber } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 
 const API_URL = 'maps.googleapis.com/maps/api/js';
 
 @Injectable()
 export class GMapsApiLoaderService {
 
-  private load: Promise<void>;
+  private _load: Observable<Event | void>;
 
   constructor(
-      @Inject(DOCUMENT) private document: any,
-      private config: GMapsCoreConfig) {
-    this.init();
+      @Inject(DOCUMENT) private _document: any,
+      private _config: GMapsCoreConfig) {
+    this._load = this._loader().pipe(shareReplay(1));
   }
 
-  ready(callback?: Function): Promise<void> {
-    return this.load.then(() => callback && callback());
+  load(): Observable<Event | void> {
+    return this._load;
   }
 
-  private init() {
-    this.load = new Promise<void>((resolve: Function, reject: Function) => {
-      if (Array.from(this.document.getElementsByTagName('script'))
+  private _loader(): Observable<Event | void> {
+    return new Observable((subscriber: Subscriber<Event>) => {
+      if (Array.from(this._document.getElementsByTagName('script'))
               .some((el: HTMLScriptElement) => el.src.includes(API_URL))) {
-        return resolve();
+        subscriber.next();
+        subscriber.complete();
+        return;
       }
-      const params = Object.keys(this.config).map(key => `${key}=${this.config[key]}`).join('&');
-      const element = Object.assign(this.document.createElement('script'), {
-        id: 'google-maps-api-script',
+      const params = Object.keys(this._config).map(key => `${key}=${this._config[key]}`).join('&');
+      const element = Object.assign(this._document.createElement('script'), {
         type: 'text/javascript',
         src: `https://${API_URL}?${params}`,
-        onload: resolve,
-        onerror: reject,
+        onload: (res) => {
+          subscriber.next(res);
+          subscriber.complete();
+        },
+        onerror: (err) => {
+          subscriber.error(err);
+        },
       });
-      this.document.head.appendChild(element);
+      this._document.body.appendChild(element);
     });
   }
 }

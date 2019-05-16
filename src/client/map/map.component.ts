@@ -14,16 +14,16 @@ export class MapComponent extends ComponentBase<google.maps.Map, google.maps.Map
   @ViewChild('mapView') mapView;
 
   constructor(
-      private apiLoader: GMapsApiLoaderService,
-      private map: MapSubject) {
+      private _apiLoader: GMapsApiLoaderService,
+      private _map: MapSubject) {
     super();
   }
 
   ngAfterContentInit(): void {
-    this.apiLoader.ready(() => {
+    this._apiLoader.load().subscribe(() => {
       this.options = Object.assign({center: {lat: 0, lng: 0}, zoom: 3}, this.options);
       this.model = new google.maps.Map(this.mapView.nativeElement, this.options);
-      this.map.next(this.model);
+      this._map.next(this.model);
     });
   }
 }
