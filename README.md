@@ -1,8 +1,8 @@
-# Angular2+ Google Maps
+# Angular Google Maps
 
-###### Full instruction is coming soon.
+This library is deprecated. Use [@angular/google-maps](https://github.com/angular/components/tree/master/src/google-maps) insted.
 
 ## Install
 ```bash
-npm i ngx-gmaps --save
+npm i ngx-gmaps
 ```
